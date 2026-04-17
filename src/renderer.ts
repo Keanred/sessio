@@ -26,8 +26,20 @@
  * ```
  */
 
-// Add this to the end of the existing file
-import './app';
-import './index.css';
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
+import '@fontsource/inter/600.css';
+import '@fontsource/inter/700.css';
+import '@fontsource/inter/800.css';
+import { createElement } from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './app';
 
-console.log('👋 This message is being logged by "renderer.ts", included via Vite');
+const existingRoot = document.getElementById('root');
+const rootElement =
+  existingRoot ??
+  Object.assign(document.body.appendChild(document.createElement('div')), {
+    id: 'root',
+  });
+
+createRoot(rootElement).render(createElement(App));

@@ -1,6 +1,24 @@
-/** @jsx React.createElement */
-import React from 'react';
-import { createRoot } from 'react-dom/client';
+import { Box, CssBaseline, ThemeProvider } from '@mui/material';
+import { FocusSessionLayout } from './components/session';
+import { appTheme } from './theme';
 
-const root = createRoot(document.body);
-root.render(<h2>Hello from React!</h2>);
+export default function App() {
+  return (
+    <ThemeProvider theme={appTheme}>
+      <CssBaseline />
+      <Box
+        sx={{
+          alignItems: 'center',
+          display: 'flex',
+          justifyContent: 'center',
+          minHeight: '100vh',
+          px: 2.5,
+          position: 'relative',
+          width: '100%',
+        }}
+      >
+        <FocusSessionLayout />
+      </Box>
+    </ThemeProvider>
+  );
+}
