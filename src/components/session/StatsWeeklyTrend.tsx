@@ -12,7 +12,7 @@ type StatsWeeklyTrendProps = {
   bars: WeeklyTrendBar[];
 };
 
-export function StatsWeeklyTrend({ label, detail, bars }: StatsWeeklyTrendProps) {
+export const StatsWeeklyTrend = ({ label, detail, bars }: StatsWeeklyTrendProps) => {
   return (
     <Box
       component="section"
@@ -70,4 +70,4 @@ export function StatsWeeklyTrend({ label, detail, bars }: StatsWeeklyTrendProps)
       </Box>
     </Box>
   );
-}
+};

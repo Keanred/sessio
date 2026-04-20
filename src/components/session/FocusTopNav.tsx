@@ -13,7 +13,7 @@ type FocusTopNavProps = {
   showDivider?: boolean;
 };
 
-export function FocusTopNav({ title, tabs, showDivider = true }: FocusTopNavProps) {
+export const FocusTopNav = ({ title, tabs, showDivider = true }: FocusTopNavProps) => {
   return (
     <Box
       component="nav"
@@ -81,4 +81,4 @@ export function FocusTopNav({ title, tabs, showDivider = true }: FocusTopNavProp
       </Box>
     </Box>
   );
-}
+};

@@ -5,9 +5,15 @@ type SessionNoteCardProps = {
   label: string;
   noteText: string;
   placeholder?: string;
+  onChange: (text: string) => void;
 };
 
-export function SessionNoteCard({ label, noteText, placeholder = 'What are you focusing on?' }: SessionNoteCardProps) {
+export const SessionNoteCard = ({
+  label,
+  noteText,
+  placeholder = 'What are you focusing on?',
+  onChange: changeSessionNote,
+}: SessionNoteCardProps) => {
   return (
     <Box
       component="section"
@@ -43,8 +49,11 @@ export function SessionNoteCard({ label, noteText, placeholder = 'What are you f
         <Box
           component="textarea"
           aria-label={label}
-          defaultValue={noteText}
+          value={noteText}
           placeholder={placeholder}
+          onChange={(e) => {
+            changeSessionNote(e.currentTarget.value);
+          }}
           sx={{
             appearance: 'none',
             backgroundColor: 'transparent',
@@ -86,4 +95,4 @@ export function SessionNoteCard({ label, noteText, placeholder = 'What are you f
       </Box>
     </Box>
   );
-}
+};

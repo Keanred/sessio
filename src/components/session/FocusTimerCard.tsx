@@ -6,7 +6,7 @@ type FocusTimerCardProps = {
   phaseLabel: string;
 };
 
-export function FocusTimerCard({ sectionLabel, timeLabel, phaseLabel }: FocusTimerCardProps) {
+export const FocusTimerCard = ({ sectionLabel, timeLabel, phaseLabel }: FocusTimerCardProps) => {
   return (
     <Box
       component="section"
@@ -99,4 +99,4 @@ export function FocusTimerCard({ sectionLabel, timeLabel, phaseLabel }: FocusTim
       </Box>
     </Box>
   );
-}
+};

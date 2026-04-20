@@ -36,16 +36,17 @@ export const appTheme = createTheme({
       styleOverrides: {
         html: {
           height: '100%',
+          background: 'transparent',
         },
         body: {
           minHeight: '100%',
           margin: 0,
-          background:
-            'radial-gradient(circle at 15% 10%, rgba(0, 88, 188, 0.22), transparent 52%), radial-gradient(circle at 85% 80%, rgba(0, 112, 235, 0.14), transparent 50%), linear-gradient(145deg, #edf2ff 0%, #fdfdff 48%, #edf4ff 100%)',
+          background: 'transparent',
           overflow: 'hidden',
         },
         '#root': {
           minHeight: '100vh',
+          background: 'transparent',
         },
         '::-webkit-scrollbar': {
           width: '4px',

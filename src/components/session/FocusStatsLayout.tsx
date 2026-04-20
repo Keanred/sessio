@@ -46,7 +46,7 @@ const weeklyTrendBars = [
   { id: 'sun', heightPercent: 0 },
 ];
 
-export function FocusStatsLayout() {
+export const FocusStatsLayout = () => {
   return (
     <FocusPopoverFrame
       ariaLabel="Petite Focus stats panel"
@@ -98,4 +98,4 @@ export function FocusStatsLayout() {
       <StatsFooter statusLabel="Focusing active" actionLabel="Export Data" />
     </FocusPopoverFrame>
   );
-}
+};

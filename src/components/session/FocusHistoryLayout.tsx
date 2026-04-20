@@ -66,7 +66,7 @@ const historyItems = [
   },
 ];
 
-export function FocusHistoryLayout() {
+export const FocusHistoryLayout = () => {
   return (
     <FocusPopoverFrame
       ariaLabel="Petite Focus history panel"
@@ -87,4 +87,4 @@ export function FocusHistoryLayout() {
       <HistorySummaryFooter summaryLabel="6.4h focused" actionLabel="View All History" />
     </FocusPopoverFrame>
   );
-}
+};

@@ -6,7 +6,7 @@ type HistorySummaryFooterProps = {
   actionLabel: string;
 };
 
-export function HistorySummaryFooter({ summaryLabel, actionLabel }: HistorySummaryFooterProps) {
+export const HistorySummaryFooter = ({ summaryLabel, actionLabel }: HistorySummaryFooterProps) => {
   return (
     <Box
       component="footer"
@@ -49,4 +49,4 @@ export function HistorySummaryFooter({ summaryLabel, actionLabel }: HistorySumma
       </Button>
     </Box>
   );
-}
+};

@@ -5,7 +5,7 @@ type HistoryFilterBarProps = {
   chipLabel: string;
 };
 
-export function HistoryFilterBar({ title, chipLabel }: HistoryFilterBarProps) {
+export const HistoryFilterBar = ({ title, chipLabel }: HistoryFilterBarProps) => {
   return (
     <Box
       sx={{
@@ -40,4 +40,4 @@ export function HistoryFilterBar({ title, chipLabel }: HistoryFilterBarProps) {
       />
     </Box>
   );
-}
+};

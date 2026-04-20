@@ -15,7 +15,7 @@ type SecondaryMetricCardProps = {
   iconClassName?: string;
 };
 
-export function PrimaryMetricCard({ label, value, delta, progressPercent }: PrimaryMetricCardProps) {
+export const PrimaryMetricCard = ({ label, value, delta, progressPercent }: PrimaryMetricCardProps) => {
   const safeProgress = Math.min(100, Math.max(0, progressPercent));
 
   return (
@@ -64,9 +64,9 @@ export function PrimaryMetricCard({ label, value, delta, progressPercent }: Prim
       />
     </Box>
   );
-}
+};
 
-export function SecondaryMetricCard({ label, value, iconName, iconClassName }: SecondaryMetricCardProps) {
+export const SecondaryMetricCard = ({ label, value, iconName, iconClassName }: SecondaryMetricCardProps) => {
   return (
     <Box
       component="section"
@@ -99,4 +99,4 @@ export function SecondaryMetricCard({ label, value, iconName, iconClassName }: S
       </Box>
     </Box>
   );
-}
+};

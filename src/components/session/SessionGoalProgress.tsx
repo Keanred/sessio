@@ -6,7 +6,7 @@ type SessionGoalProgressProps = {
   progressPercent: number;
 };
 
-export function SessionGoalProgress({ label, goalText, progressPercent }: SessionGoalProgressProps) {
+export const SessionGoalProgress = ({ label, goalText, progressPercent }: SessionGoalProgressProps) => {
   const safeProgress = Math.min(100, Math.max(0, progressPercent));
 
   return (
@@ -47,4 +47,4 @@ export function SessionGoalProgress({ label, goalText, progressPercent }: Sessio
       />
     </Box>
   );
-}
+};

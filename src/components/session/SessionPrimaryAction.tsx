@@ -3,16 +3,25 @@ import { Icon } from '../common/Icon';
 
 type SessionPrimaryActionProps = {
   label: string;
+  running?: string;
+  onClick?: () => void;
 };
 
-export function SessionPrimaryAction({ label }: SessionPrimaryActionProps) {
+export const SessionPrimaryAction = ({ label, running, onClick }: SessionPrimaryActionProps) => {
   return (
     <Box sx={{ flexShrink: 0, pt: 0.5 }}>
       <Button
+        onClick={onClick}
         aria-label={label}
         fullWidth
         size="large"
-        startIcon={<Icon name="stop_circle" filled sx={{ fontSize: 18 }} />}
+        startIcon={
+          running === 'running' ? (
+            <Icon name="stop_circle" filled sx={{ fontSize: 18 }} />
+          ) : (
+            <Icon name="start_circle" filled sx={{ fontSize: 18 }} />
+          )
+        }
         type="button"
         variant="contained"
         sx={{
@@ -33,4 +42,4 @@ export function SessionPrimaryAction({ label }: SessionPrimaryActionProps) {
       </Button>
     </Box>
   );
-}
+};

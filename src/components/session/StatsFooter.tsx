@@ -5,7 +5,7 @@ type StatsFooterProps = {
   actionLabel: string;
 };
 
-export function StatsFooter({ statusLabel, actionLabel }: StatsFooterProps) {
+export const StatsFooter = ({ statusLabel, actionLabel }: StatsFooterProps) => {
   return (
     <Box
       component="footer"
@@ -47,4 +47,4 @@ export function StatsFooter({ statusLabel, actionLabel }: StatsFooterProps) {
       </Button>
     </Box>
   );
-}
+};

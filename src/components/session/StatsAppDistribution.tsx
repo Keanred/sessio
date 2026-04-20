@@ -14,7 +14,7 @@ type StatsAppDistributionProps = {
   items: DistributionItem[];
 };
 
-function DistributionRow({ item }: { item: DistributionItem }) {
+const DistributionRow = ({ item }: { item: DistributionItem }) => {
   const safePercent = Math.min(100, Math.max(0, item.percent));
 
   return (
@@ -61,9 +61,9 @@ function DistributionRow({ item }: { item: DistributionItem }) {
       />
     </Box>
   );
-}
+};
 
-export function StatsAppDistribution({ title, items }: StatsAppDistributionProps) {
+export const StatsAppDistribution = ({ title, items }: StatsAppDistributionProps) => {
   return (
     <Box component="section" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       <Typography
@@ -79,4 +79,4 @@ export function StatsAppDistribution({ title, items }: StatsAppDistributionProps
       </Box>
     </Box>
   );
-}
+};

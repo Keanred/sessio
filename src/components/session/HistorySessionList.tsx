@@ -15,7 +15,7 @@ type HistorySessionListProps = {
   items: HistorySessionItem[];
 };
 
-function HistorySessionRow({ item }: { item: HistorySessionItem }) {
+const HistorySessionRow = ({ item }: { item: HistorySessionItem }) => {
   return (
     <Box
       component="article"
@@ -82,9 +82,9 @@ function HistorySessionRow({ item }: { item: HistorySessionItem }) {
       </Box>
     </Box>
   );
-}
+};
 
-export function HistorySessionList({ items }: HistorySessionListProps) {
+export const HistorySessionList = ({ items }: HistorySessionListProps) => {
   return (
     <Box
       component="main"
@@ -110,4 +110,4 @@ export function HistorySessionList({ items }: HistorySessionListProps) {
       ))}
     </Box>
   );
-}
+};

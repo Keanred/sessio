@@ -2,7 +2,7 @@ import { Box, CssBaseline, ThemeProvider } from '@mui/material';
 import { FocusSessionLayout } from './components/session';
 import { appTheme } from './theme';
 
-export default function App() {
+const App = () => {
   return (
     <ThemeProvider theme={appTheme}>
       <CssBaseline />
@@ -21,4 +21,6 @@ export default function App() {
       </Box>
     </ThemeProvider>
   );
-}
+};
+
+export default App;
