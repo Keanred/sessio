@@ -1,12 +1,12 @@
 import { Box, Button, Typography } from '@mui/material';
-import { Icon } from '../common/Icon';
+import { Icon } from './Icon';
 
-type HistorySummaryFooterProps = {
+type SummaryFooterProps = {
   summaryLabel: string;
   actionLabel: string;
 };
 
-export const HistorySummaryFooter = ({ summaryLabel, actionLabel }: HistorySummaryFooterProps) => {
+export const SummaryFooter = ({ summaryLabel, actionLabel }: SummaryFooterProps) => {
   return (
     <Box
       component="footer"

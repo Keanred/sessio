@@ -1,11 +1,11 @@
 import { Box, Button, Typography } from '@mui/material';
 
-type StatsFooterProps = {
+type PanelFooterProps = {
   statusLabel: string;
   actionLabel: string;
 };
 
-export const StatsFooter = ({ statusLabel, actionLabel }: StatsFooterProps) => {
+export const PanelFooter = ({ statusLabel, actionLabel }: PanelFooterProps) => {
   return (
     <Box
       component="footer"

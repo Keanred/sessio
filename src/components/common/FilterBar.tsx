@@ -1,11 +1,11 @@
 import { Box, Chip, Typography } from '@mui/material';
 
-type HistoryFilterBarProps = {
+type FilterBarProps = {
   title: string;
   chipLabel: string;
 };
 
-export const HistoryFilterBar = ({ title, chipLabel }: HistoryFilterBarProps) => {
+export const FilterBar = ({ title, chipLabel }: FilterBarProps) => {
   return (
     <Box
       sx={{

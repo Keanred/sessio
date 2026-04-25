@@ -2,13 +2,13 @@ import { Paper } from '@mui/material';
 import type { SxProps, Theme } from '@mui/material/styles';
 import type { ReactNode } from 'react';
 
-type FocusPopoverFrameProps = {
+type PopoverFrameProps = {
   ariaLabel: string;
   children: ReactNode;
   paperSx?: SxProps<Theme>;
 };
 
-export const FocusPopoverFrame = ({ ariaLabel, children, paperSx }: FocusPopoverFrameProps) => {
+export const PopoverFrame = ({ ariaLabel, children, paperSx }: PopoverFrameProps) => {
   return (
     <Paper
       component="article"

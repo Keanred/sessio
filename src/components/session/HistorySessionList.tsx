@@ -1,6 +1,8 @@
 import { Avatar, Box, Typography } from '@mui/material';
+import { SessionHistoryItem } from '@shared/types';
+import { useEffect, useMemo, useState } from 'react';
 
-type HistorySessionItem = {
+type HistorySessionListItem = {
   id: string;
   appName: string;
   duration: string;
@@ -12,10 +14,29 @@ type HistorySessionItem = {
 };
 
 type HistorySessionListProps = {
-  items: HistorySessionItem[];
+  items: SessionHistoryItem[];
 };
 
-const HistorySessionRow = ({ item }: { item: HistorySessionItem }) => {
+const buildHistorySessionListItem = (
+  session: SessionHistoryItem,
+  iconUrlsByAppName: Record<string, string>,
+): HistorySessionListItem => {
+  const primaryApp = session.appUsage[0];
+  const appName = primaryApp?.appName ?? 'Focus Session';
+
+  return {
+    id: session.id,
+    appName,
+    duration: session.duration,
+    timestamp: session.startTime.toLocaleString(),
+    note: session.note ?? '',
+    iconUrl: iconUrlsByAppName[appName] ?? '',
+    iconAlt: `${appName} icon`,
+    iconBackgroundColor: 'rgba(242, 245, 252, 0.94)',
+  };
+};
+
+const HistorySessionRow = ({ item }: { item: HistorySessionListItem }) => {
   return (
     <Box
       component="article"
@@ -85,6 +106,62 @@ const HistorySessionRow = ({ item }: { item: HistorySessionItem }) => {
 };
 
 export const HistorySessionList = ({ items }: HistorySessionListProps) => {
+  const [iconUrlsByAppName, setIconUrlsByAppName] = useState<Record<string, string>>({});
+
+  const appNames = useMemo(() => {
+    const uniqueNames = new Set<string>();
+
+    for (const item of items) {
+      const primaryAppName = item.appUsage[0]?.appName;
+      if (primaryAppName) {
+        uniqueNames.add(primaryAppName);
+      }
+    }
+
+    return Array.from(uniqueNames);
+  }, [items]);
+
+  useEffect(() => {
+    if (appNames.length === 0) {
+      return;
+    }
+
+    let disposed = false;
+
+    const resolveIcons = async () => {
+      const resolvedEntries = await Promise.all(
+        appNames.map(async (appName) => {
+          const iconUrl = await window.api.resolveAppIcon(appName).catch(() => null);
+          return [appName, iconUrl] as const;
+        }),
+      );
+
+      if (disposed) {
+        return;
+      }
+
+      setIconUrlsByAppName((previousMap) => {
+        const nextMap = { ...previousMap };
+        let hasChanges = false;
+
+        for (const [appName, iconUrl] of resolvedEntries) {
+          if (iconUrl && nextMap[appName] !== iconUrl) {
+            nextMap[appName] = iconUrl;
+            hasChanges = true;
+          }
+        }
+
+        return hasChanges ? nextMap : previousMap;
+      });
+    };
+
+    void resolveIcons();
+
+    return () => {
+      disposed = true;
+    };
+  }, [appNames]);
+
   return (
     <Box
       component="main"
@@ -106,7 +183,7 @@ export const HistorySessionList = ({ items }: HistorySessionListProps) => {
       }}
     >
       {items.map((item) => (
-        <HistorySessionRow key={item.id} item={item} />
+        <HistorySessionRow key={item.id} item={buildHistorySessionListItem(item, iconUrlsByAppName)} />
       ))}
     </Box>
   );

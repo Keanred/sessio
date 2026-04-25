@@ -1,5 +1,5 @@
 import { Box, LinearProgress, Typography } from '@mui/material';
-import { Icon } from '../common/Icon';
+import { Icon } from './Icon';
 
 type DistributionItem = {
   id: string;
@@ -9,7 +9,7 @@ type DistributionItem = {
   fillColor?: string;
 };
 
-type StatsAppDistributionProps = {
+type AppDistributionProps = {
   title: string;
   items: DistributionItem[];
 };
@@ -63,7 +63,7 @@ const DistributionRow = ({ item }: { item: DistributionItem }) => {
   );
 };
 
-export const StatsAppDistribution = ({ title, items }: StatsAppDistributionProps) => {
+export const AppDistribution = ({ title, items }: AppDistributionProps) => {
   return (
     <Box component="section" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       <Typography

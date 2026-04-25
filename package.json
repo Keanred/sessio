@@ -51,6 +51,8 @@
     "@mui/icons-material": "^9.0.0",
     "@mui/material": "^9.0.0",
     "@tanstack/react-router": "^1.168.23",
+    "@types/better-sqlite3": "^7.6.13",
+    "better-sqlite3": "^12.9.0",
     "electron-squirrel-startup": "^1.0.1",
     "react": "^19.2.5",
     "react-dom": "^19.2.5"

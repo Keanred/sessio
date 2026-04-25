@@ -1,15 +1,15 @@
 import { Box } from '@mui/material';
-import { FocusPopoverFrame } from './FocusPopoverFrame';
+import { AppDistribution } from '../common/AppDistribution';
+import { PrimaryMetricCard, SecondaryMetricCard } from '../common/MetricCards';
+import { PanelFooter } from '../common/PanelFooter';
+import { PopoverFrame } from '../common/PopoverFrame';
+import { WeeklyTrend } from '../common/WeeklyTrend';
 import { FocusTopNav } from './FocusTopNav';
-import { StatsAppDistribution } from './StatsAppDistribution';
-import { StatsFooter } from './StatsFooter';
-import { PrimaryMetricCard, SecondaryMetricCard } from './StatsMetricCards';
-import { StatsWeeklyTrend } from './StatsWeeklyTrend';
 
 const topNavTabs = [
-  { id: 'focus', label: 'Focus' },
-  { id: 'history', label: 'History' },
-  { id: 'stats', label: 'Stats', isActive: true },
+  { id: 'focus', label: 'Focus', to: '/' },
+  { id: 'history', label: 'History', to: '/history' },
+  { id: 'stats', label: 'Stats', to: '/stats' },
 ];
 
 const appDistributionItems = [
@@ -48,13 +48,14 @@ const weeklyTrendBars = [
 
 export const FocusStatsLayout = () => {
   return (
-    <FocusPopoverFrame
+    <PopoverFrame
       ariaLabel="Petite Focus stats panel"
       paperSx={{
         backgroundColor: '#f9f9fb',
         border: '1px solid rgba(193, 198, 215, 0.1)',
         boxShadow: '0 24px 48px rgba(15, 23, 42, 0.18)',
-        height: 400,
+        height: 430,
+        width: 360,
       }}
     >
       <FocusTopNav title="Petite Focus" tabs={topNavTabs} showDivider={false} />
@@ -90,12 +91,12 @@ export const FocusStatsLayout = () => {
           />
         </Box>
 
-        <StatsAppDistribution title="App Distribution" items={appDistributionItems} />
+        <AppDistribution title="App Distribution" items={appDistributionItems} />
 
-        <StatsWeeklyTrend label="Weekly Trend" detail="Daily Avg: 5.2h" bars={weeklyTrendBars} />
+        <WeeklyTrend label="Weekly Trend" detail="Daily Avg: 5.2h" bars={weeklyTrendBars} />
       </Box>
 
-      <StatsFooter statusLabel="Focusing active" actionLabel="Export Data" />
-    </FocusPopoverFrame>
+      <PanelFooter statusLabel="Focusing active" actionLabel="Export Data" />
+    </PopoverFrame>
   );
 };

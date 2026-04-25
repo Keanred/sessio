@@ -1,10 +1,11 @@
+import { Link } from '@tanstack/react-router';
 import { Box, IconButton, Typography } from '@mui/material';
 import { Icon } from '../common/Icon';
 
 type FocusTab = {
   id: string;
   label: string;
-  isActive?: boolean;
+  to: string;
 };
 
 type FocusTopNavProps = {
@@ -37,28 +38,32 @@ export const FocusTopNav = ({ title, tabs, showDivider = true }: FocusTopNavProp
       <Box sx={{ alignItems: 'center', display: 'flex', gap: 1.25 }}>
         <Box sx={{ alignItems: 'center', display: 'flex', gap: 0.5 }}>
           {tabs.map((tab) => (
-            <Box
+            <Link
               key={tab.id}
-              component="button"
-              type="button"
-              sx={{
-                backgroundColor: tab.isActive ? 'transparent' : 'transparent',
+              to={tab.to}
+              style={{
                 border: 0,
-                borderBottom: tab.isActive ? '1px solid #2563eb' : '1px solid transparent',
+                borderBottom: '1px solid transparent',
                 borderRadius: '4px',
-                color: tab.isActive ? '#2563eb' : '#64748b',
-                cursor: 'default',
+                color: '#64748b',
                 fontFamily: 'inherit',
                 fontSize: 13,
-                fontWeight: tab.isActive ? 600 : 500,
+                fontWeight: 500,
                 letterSpacing: '-0.01em',
                 lineHeight: 1.2,
-                px: 0.5,
-                py: 0.125,
+                padding: '0.125rem 0.5rem',
+                textDecoration: 'none',
+              }}
+              activeProps={{
+                style: {
+                  borderBottom: '1px solid #2563eb',
+                  color: '#2563eb',
+                  fontWeight: 600,
+                },
               }}
             >
               {tab.label}
-            </Box>
+            </Link>
           ))}
         </Box>
 

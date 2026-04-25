@@ -10,6 +10,10 @@
     "noImplicitAny": true,
     "sourceMap": true,
     "baseUrl": ".",
+    "paths": {
+      "@shared": ["."],
+      "@shared/*": ["*"]
+    },
     "outDir": "dist",
     "moduleResolution": "node",
     "resolveJsonModule": true

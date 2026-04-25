@@ -6,13 +6,13 @@ type WeeklyTrendBar = {
   isHighlighted?: boolean;
 };
 
-type StatsWeeklyTrendProps = {
+type WeeklyTrendProps = {
   label: string;
   detail: string;
   bars: WeeklyTrendBar[];
 };
 
-export const StatsWeeklyTrend = ({ label, detail, bars }: StatsWeeklyTrendProps) => {
+export const WeeklyTrend = ({ label, detail, bars }: WeeklyTrendProps) => {
   return (
     <Box
       component="section"

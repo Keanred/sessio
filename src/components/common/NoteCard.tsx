@@ -1,19 +1,19 @@
 import { Box, Typography } from '@mui/material';
-import { Icon } from '../common/Icon';
+import { Icon } from './Icon';
 
-type SessionNoteCardProps = {
+type NoteCardProps = {
   label: string;
   noteText: string;
   placeholder?: string;
   onChange: (text: string) => void;
 };
 
-export const SessionNoteCard = ({
+export const NoteCard = ({
   label,
   noteText,
   placeholder = 'What are you focusing on?',
-  onChange: changeSessionNote,
-}: SessionNoteCardProps) => {
+  onChange,
+}: NoteCardProps) => {
   return (
     <Box
       component="section"
@@ -30,7 +30,7 @@ export const SessionNoteCard = ({
     >
       <Typography
         color="text.secondary"
-        sx={{ fontSize: 11, fontWeight: 600, letterSpacing: '-0.01em', px: 0.5, textTransform: 'uppercase' }}
+        sx={{ fontSize: 10, fontWeight: 600, letterSpacing: '-0.01em', px: 0.5, textTransform: 'uppercase' }}
       >
         {label}
       </Typography>
@@ -41,7 +41,7 @@ export const SessionNoteCard = ({
           borderRadius: '8px',
           display: 'flex',
           flex: '1 1 0',
-          minHeight: 96,
+          minHeight: 72,
           overflow: 'hidden',
           position: 'relative',
         }}
@@ -52,7 +52,7 @@ export const SessionNoteCard = ({
           value={noteText}
           placeholder={placeholder}
           onChange={(e) => {
-            changeSessionNote(e.currentTarget.value);
+            onChange(e.currentTarget.value);
           }}
           sx={{
             appearance: 'none',
@@ -67,9 +67,9 @@ export const SessionNoteCard = ({
             minHeight: 0,
             outline: 'none',
             overflowY: 'auto',
-            p: 1.5,
-            pb: 3.5,
-            pr: 5,
+            p: 1.25,
+            pb: 3,
+            pr: 4,
             resize: 'none',
             width: '100%',
             '&::placeholder': {
@@ -83,11 +83,11 @@ export const SessionNoteCard = ({
           aria-hidden="true"
           sx={{
             alignItems: 'center',
-            bottom: 8,
+            bottom: 6,
             color: 'rgba(65, 71, 85, 0.3)',
             display: 'inline-flex',
             position: 'absolute',
-            right: 8,
+            right: 6,
           }}
         >
           <Icon name="edit_note" sx={{ fontSize: 14 }} />

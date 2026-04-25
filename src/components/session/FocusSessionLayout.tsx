@@ -1,16 +1,16 @@
 import { Box } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { FocusPopoverFrame } from './FocusPopoverFrame';
+import { GoalProgress } from '../common/GoalProgress';
+import { NoteCard } from '../common/NoteCard';
+import { PopoverFrame } from '../common/PopoverFrame';
+import { PrimaryActionButton } from '../common/PrimaryActionButton';
 import { FocusTimerCard } from './FocusTimerCard';
 import { FocusTopNav } from './FocusTopNav';
-import { SessionGoalProgress } from './SessionGoalProgress';
-import { SessionNoteCard } from './SessionNoteCard';
-import { SessionPrimaryAction } from './SessionPrimaryAction';
 
 const topNavTabs = [
-  { id: 'focus', label: 'Focus', isActive: true },
-  { id: 'history', label: 'History' },
-  { id: 'stats', label: 'Stats' },
+  { id: 'focus', label: 'Focus', to: '/' },
+  { id: 'history', label: 'History', to: '/history' },
+  { id: 'stats', label: 'Stats', to: '/stats' },
 ];
 
 export const FocusSessionLayout = () => {
@@ -55,33 +55,41 @@ export const FocusSessionLayout = () => {
   };
 
   return (
-    <FocusPopoverFrame ariaLabel="Sessio session panel">
-      <FocusTopNav title="Sessio" tabs={topNavTabs} />
+    <PopoverFrame
+      ariaLabel="Sessio session panel"
+      paperSx={{
+        backgroundColor: '#f9f9fb',
+        border: '1px solid rgba(193, 198, 215, 0.1)',
+        height: 430,
+        width: 360,
+      }}
+    >
+      <FocusTopNav title="Petite Focus" tabs={topNavTabs} showDivider={false} />
 
       <Box
         component="main"
         sx={{
           display: 'grid',
           flex: 1,
-          gap: 2,
-          gridTemplateRows: 'auto auto minmax(0, 1fr) auto',
+          gap: 1.75,
+          gridTemplateRows: 'auto auto minmax(80px, 1fr) auto',
           minHeight: 0,
-          overflow: 'hidden',
+          overflowY: 'auto',
           p: 2,
           position: 'relative',
         }}
       >
         <FocusTimerCard sectionLabel="Current Session" timeLabel={elapsedTime.toString()} phaseLabel={sessionNote} />
 
-        <SessionGoalProgress label="Session Goal" goalText="45:00" progressPercent={54} />
+        <GoalProgress label="Session Goal" goalText="45:00" progressPercent={54} />
 
-        <SessionNoteCard label="Session Note" noteText={sessionNote} onChange={setSessionNote} />
-        <SessionPrimaryAction
+        <NoteCard label="Session Note" noteText={sessionNote} onChange={setSessionNote} />
+        <PrimaryActionButton
           label={timerState === 'running' ? 'Stop Session' : 'Start Session'}
           running={timerState}
           onClick={handleStartStop}
         />
       </Box>
-    </FocusPopoverFrame>
+    </PopoverFrame>
   );
 };

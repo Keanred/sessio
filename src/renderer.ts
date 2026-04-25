@@ -33,7 +33,8 @@ import '@fontsource/inter/700.css';
 import '@fontsource/inter/800.css';
 import { createElement } from 'react';
 import { createRoot } from 'react-dom/client';
-import App from './app';
+import { RouterProvider } from '@tanstack/react-router';
+import { router } from './routes';
 
 const existingRoot = document.getElementById('root');
 const rootElement =
@@ -42,4 +43,4 @@ const rootElement =
     id: 'root',
   });
 
-createRoot(rootElement).render(createElement(App));
+createRoot(rootElement).render(createElement(RouterProvider, { router }));

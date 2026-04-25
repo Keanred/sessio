@@ -1,12 +1,12 @@
 import { Box, LinearProgress, Typography } from '@mui/material';
 
-type SessionGoalProgressProps = {
+type GoalProgressProps = {
   label: string;
   goalText: string;
   progressPercent: number;
 };
 
-export const SessionGoalProgress = ({ label, goalText, progressPercent }: SessionGoalProgressProps) => {
+export const GoalProgress = ({ label, goalText, progressPercent }: GoalProgressProps) => {
   const safeProgress = Math.min(100, Math.max(0, progressPercent));
 
   return (

@@ -1,8 +1,10 @@
+import { Outlet } from '@tanstack/react-router';
 import { Box, CssBaseline, ThemeProvider } from '@mui/material';
-import { FocusSessionLayout } from './components/session';
+import { useEffect } from 'react';
 import { appTheme } from './theme';
 
 const App = () => {
+
   return (
     <ThemeProvider theme={appTheme}>
       <CssBaseline />
@@ -17,7 +19,7 @@ const App = () => {
           width: '100%',
         }}
       >
-        <FocusSessionLayout />
+        <Outlet />
       </Box>
     </ThemeProvider>
   );

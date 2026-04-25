@@ -20,7 +20,7 @@ export const FocusTimerCard = ({ sectionLabel, timeLabel, phaseLabel }: FocusTim
         justifyContent: 'center',
         overflow: 'hidden',
         px: 3,
-        py: 3,
+        py: 2.5,
         position: 'relative',
         textAlign: 'center',
       }}
@@ -50,7 +50,7 @@ export const FocusTimerCard = ({ sectionLabel, timeLabel, phaseLabel }: FocusTim
       <Typography
         sx={{
           color: 'text.primary',
-          fontSize: 56,
+          fontSize: 48,
           fontWeight: 800,
           letterSpacing: '-0.06em',
           lineHeight: 1,

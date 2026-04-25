@@ -1,13 +1,13 @@
 import { Box, Button } from '@mui/material';
-import { Icon } from '../common/Icon';
+import { Icon } from './Icon';
 
-type SessionPrimaryActionProps = {
+type PrimaryActionButtonProps = {
   label: string;
   running?: string;
   onClick?: () => void;
 };
 
-export const SessionPrimaryAction = ({ label, running, onClick }: SessionPrimaryActionProps) => {
+export const PrimaryActionButton = ({ label, running, onClick }: PrimaryActionButtonProps) => {
   return (
     <Box sx={{ flexShrink: 0, pt: 0.5 }}>
       <Button

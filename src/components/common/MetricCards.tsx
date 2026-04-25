@@ -1,5 +1,5 @@
 import { Box, LinearProgress, Typography } from '@mui/material';
-import { Icon } from '../common/Icon';
+import { Icon } from './Icon';
 
 type PrimaryMetricCardProps = {
   label: string;
