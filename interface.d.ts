@@ -1,7 +1,7 @@
-import type { Session } from '@shared/types';
+import type { Session, SessionSave } from '@shared/types';
 
 export interface IElectronAPI {
-  saveSession: (session: Session) => void;
+  saveSession: (session: SessionSave) => void;
   loadSessions: () => Promise<Session[]>;
   resolveAppIcon: (appName: string) => Promise<string | null>;
 }

@@ -1,8 +1,8 @@
 import { createRootRoute, createRoute, createRouter } from '@tanstack/react-router';
 import App from './app';
-import { FocusHistoryLayout } from './components/session/FocusHistoryLayout';
-import { FocusSessionLayout } from './components/session/FocusSessionLayout';
-import { FocusStatsLayout } from './components/session/FocusStatsLayout';
+import { FocusHistoryLayout } from './components/sessio/FocusHistoryLayout';
+import { FocusSessionLayout } from './components/sessio/FocusSessionLayout';
+import { FocusStatsLayout } from './components/sessio/FocusStatsLayout';
 
 const rootRoute = createRootRoute({
   component: App,

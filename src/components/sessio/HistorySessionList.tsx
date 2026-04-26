@@ -131,7 +131,7 @@ export const HistorySessionList = ({ items }: HistorySessionListProps) => {
     const resolveIcons = async () => {
       const resolvedEntries = await Promise.all(
         appNames.map(async (appName) => {
-          const iconUrl = await window.api.resolveAppIcon(appName).catch(() => null);
+          const iconUrl = await window.api.resolveAppIcon(appName).catch((): null => null);
           return [appName, iconUrl] as const;
         }),
       );

@@ -4,10 +4,12 @@ type GoalProgressProps = {
   label: string;
   goalText: string;
   progressPercent: number;
+  onGoalClick?: (event: React.MouseEvent<HTMLElement>) => void;
 };
 
-export const GoalProgress = ({ label, goalText, progressPercent }: GoalProgressProps) => {
+export const GoalProgress = ({ label, goalText, progressPercent, onGoalClick }: GoalProgressProps) => {
   const safeProgress = Math.min(100, Math.max(0, progressPercent));
+  const completed = safeProgress >= 100;
 
   return (
     <Box
@@ -26,7 +28,20 @@ export const GoalProgress = ({ label, goalText, progressPercent }: GoalProgressP
         >
           {label}
         </Typography>
-        <Typography color="text.primary" sx={{ fontSize: 11, fontWeight: 700 }}>
+        <Typography
+          color="text.primary"
+          onClick={onGoalClick}
+          sx={{
+            fontSize: 11,
+            fontWeight: 700,
+            ...(onGoalClick && {
+              cursor: 'pointer',
+              borderRadius: '4px',
+              px: 0.5,
+              '&:hover': { color: 'primary.main' },
+            }),
+          }}
+        >
           {goalText}
         </Typography>
       </Box>
@@ -40,8 +55,9 @@ export const GoalProgress = ({ label, goalText, progressPercent }: GoalProgressP
           borderRadius: '9999px',
           height: 4,
           '& .MuiLinearProgress-bar': {
-            background: '#0058bc',
+            background: completed ? '#22c55e' : '#0058bc',
             borderRadius: '9999px',
+            transition: 'background 0.3s ease',
           },
         }}
       />

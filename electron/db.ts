@@ -1,5 +1,5 @@
 import database, { Database } from 'better-sqlite3';
-import { Session } from './types';
+import { SessionSave } from './types';
 const dbName = 'sessio.db';
 
 export type SessionRow = {
@@ -20,7 +20,7 @@ export const createDatabase = (): Database => {
 
   db.exec(`
     CREATE TABLE IF NOT EXISTS sessions (
-      id TEXT PRIMARY KEY,
+      id TEXT PRIMARY KEY NOT NULL,
       startTime INTEGER NOT NULL,
       endTime INTEGER NOT NULL,
       duration INTEGER NOT NULL,
@@ -38,10 +38,28 @@ export const createDatabase = (): Database => {
     );
   `);
 
+  // Normalize legacy duration values that were saved in milliseconds.
+  db.exec(`
+    UPDATE sessions
+    SET duration = CAST(ROUND(duration / 1000.0) AS INTEGER)
+    WHERE duration > 100000;
+  `);
+
+  db.exec(`
+    UPDATE app_usage
+    SET duration = CAST(ROUND(duration / 1000.0) AS INTEGER)
+    WHERE duration > 100000;
+  `);
+
   return db;
 };
 
-export const insertSession = (db: database.Database, session: Session) => {
+export const insertSession = (db: database.Database, session: SessionSave) => {
+  const uuid = crypto.randomUUID();
+  const insertedSession = {
+    ...session,
+    id: uuid,
+  };
   const insertSessionStmt = db.prepare(`
     INSERT INTO sessions (id, startTime, endTime, duration, note)
     VALUES (@id, @startTime, @endTime, @duration, @note);
@@ -52,18 +70,12 @@ export const insertSession = (db: database.Database, session: Session) => {
     VALUES (@sessionId, @appName, @duration);
   `);
 
-  const insertSessionTransaction = db.transaction((session: Session) => {
-    insertSessionStmt.run({
-      id: session.id,
-      startTime: session.startTime,
-      endTime: session.endTime,
-      duration: session.duration,
-      note: session.note,
-    });
+  const insertSessionTransaction = db.transaction((session: SessionSave) => {
+    insertSessionStmt.run(insertedSession);
 
     for (const appUsage of session.appUsage) {
       insertAppUsageStmt.run({
-        sessionId: session.id,
+        sessionId: insertedSession.id,
         appName: appUsage.appName,
         duration: appUsage.duration,
       });
@@ -78,26 +90,25 @@ export const getSessionRows = (db: database.Database) => {
 };
 
 export const getAppUsageRowsBySessionId = (db: database.Database, sessionId: string) => {
-  return db.prepare('SELECT appName, duration FROM app_usage WHERE sessionId = ?').all(sessionId) ;
+  return db.prepare('SELECT appName, duration FROM app_usage WHERE sessionId = ?').all(sessionId);
 };
 
-const createSeedSessions = (): Session[] => {
-  const minute = 60 * 1000;
+const createSeedSessions = (): SessionSave[] => {
+  const second = 1000;
+  const minute = 60;
   const now = Date.now();
   const buildSession = (
-    id: string,
     startMinutesAgo: number,
     durationMinutes: number,
     note: string,
     appUsage: AppUsageRow[],
-  ): Session => {
-    const startTime = now - startMinutesAgo * minute;
+  ): SessionSave => {
+    const startTime = now - startMinutesAgo * minute * second;
     const duration = durationMinutes * minute;
 
     return {
-      id,
       startTime,
-      endTime: startTime + duration,
+      endTime: startTime + duration * second,
       duration,
       note,
       appUsage,
@@ -105,15 +116,15 @@ const createSeedSessions = (): Session[] => {
   };
 
   return [
-    buildSession('seed-focus-01', 24 * 60 + 90, 45, 'Deep work on session layouts', [
+    buildSession(24 * 60 + 90, 45, 'Deep work on session layouts', [
       { appName: 'Visual Studio Code', duration: 33 * minute },
       { appName: 'Safari', duration: 12 * minute },
     ]),
-    buildSession('seed-focus-02', 12 * 60 + 35, 30, 'Polished metrics and notes UI', [
+    buildSession(12 * 60 + 35, 30, 'Polished metrics and notes UI', [
       { appName: 'Visual Studio Code', duration: 21 * minute },
       { appName: 'Figma', duration: 9 * minute },
     ]),
-    buildSession('seed-focus-03', 3 * 60 + 20, 50, 'Refined timer behavior and flow', [
+    buildSession(3 * 60 + 20, 50, 'Refined timer behavior and flow', [
       { appName: 'Visual Studio Code', duration: 38 * minute },
       { appName: 'Google Chrome', duration: 12 * minute },
     ]),
@@ -127,7 +138,7 @@ export const seedSessionsIfEmpty = (db: database.Database): boolean => {
   }
 
   const seedSessions = createSeedSessions();
-  const insertMany = db.transaction((sessions: Session[]) => {
+  const insertMany = db.transaction((sessions: SessionSave[]) => {
     for (const session of sessions) {
       insertSession(db, session);
     }

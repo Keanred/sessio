@@ -1,5 +1,5 @@
-import { Link } from '@tanstack/react-router';
 import { Box, IconButton, Typography } from '@mui/material';
+import { Link } from '@tanstack/react-router';
 import { Icon } from '../common/Icon';
 
 type FocusTab = {

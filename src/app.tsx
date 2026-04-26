@@ -1,10 +1,8 @@
-import { Outlet } from '@tanstack/react-router';
 import { Box, CssBaseline, ThemeProvider } from '@mui/material';
-import { useEffect } from 'react';
+import { Outlet } from '@tanstack/react-router';
 import { appTheme } from './theme';
 
 const App = () => {
-
   return (
     <ThemeProvider theme={appTheme}>
       <CssBaseline />

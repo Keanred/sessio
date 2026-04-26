@@ -8,12 +8,7 @@ type NoteCardProps = {
   onChange: (text: string) => void;
 };
 
-export const NoteCard = ({
-  label,
-  noteText,
-  placeholder = 'What are you focusing on?',
-  onChange,
-}: NoteCardProps) => {
+export const NoteCard = ({ label, noteText, placeholder = 'What are you focusing on?', onChange }: NoteCardProps) => {
   return (
     <Box
       component="section"

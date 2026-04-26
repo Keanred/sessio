@@ -14,6 +14,13 @@
   ],
   "parser": "@typescript-eslint/parser",
   "plugins": ["prettier"],
+  "settings": {
+    "import/resolver": {
+      "typescript": {
+        "project": "./tsconfig.json"
+      }
+    }
+  },
   "rules": {
     "prettier/prettier": "error"
   }

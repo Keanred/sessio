@@ -1,11 +1,11 @@
-import { getAppUsageRowsBySessionId, getSessionRows, insertSession, SessionRow } from './db';
 import { app } from 'electron';
 import { execFileSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { basename } from 'node:path';
+import { getAppUsageRowsBySessionId, getSessionRows, insertSession, SessionRow } from './db';
 import { db } from './main';
-import { AppUsage, Session } from './types';
+import { AppUsage, Session, SessionSave } from './types';
 
 export const isAppUsage = (value: unknown): value is AppUsage => {
   if (typeof value !== 'object' || value === null) return false;
@@ -18,6 +18,19 @@ export const isSession = (value: unknown): value is Session => {
   const v = value as Record<string, unknown>;
   return (
     typeof v.id === 'string' &&
+    typeof v.startTime === 'number' &&
+    typeof v.endTime === 'number' &&
+    typeof v.duration === 'number' &&
+    (v.note === undefined || typeof v.note === 'string') &&
+    Array.isArray(v.appUsage) &&
+    (v.appUsage as unknown[]).every(isAppUsage)
+  );
+};
+
+export const isSessionSave = (value: unknown): value is SessionSave => {
+  if (typeof value !== 'object' || value === null) return false;
+  const v = value as Record<string, unknown>;
+  return (
     typeof v.startTime === 'number' &&
     typeof v.endTime === 'number' &&
     typeof v.duration === 'number' &&
@@ -60,9 +73,12 @@ const formAppUsage = (usage: AppUsage): AppUsage => {
   };
 };
 
-export const handleSaveSession = (session: Session): void => {
-  const formedSession = formSession(session);
-  insertSession(db, formedSession);
+export const handleSaveSession = (session: unknown): void => {
+  if (!isSessionSave(session)) {
+    throw new Error('Invalid session payload received by main process');
+  }
+
+  insertSession(db, session);
 };
 
 export const handleLoadSessions = (): Session[] => {
@@ -104,7 +120,10 @@ const toAppBundlePathCandidates = (appName: string): string[] => {
 };
 
 const normalizeAppName = (value: string): string => {
-  return value.toLowerCase().replace(/\.app$/i, '').replace(/[^a-z0-9]/g, '');
+  return value
+    .toLowerCase()
+    .replace(/\.app$/i, '')
+    .replace(/[^a-z0-9]/g, '');
 };
 
 const escapeSpotlightQueryValue = (value: string): string => {
@@ -130,10 +149,10 @@ const scoreBundlePath = (bundlePath: string, appName: string): number => {
 const searchAppBundlePaths = (appName: string): string[] => {
   const escapedName = escapeSpotlightQueryValue(appName.trim());
   const query =
-    `kMDItemContentTypeTree == \"com.apple.application-bundle\" && (` +
-    `kMDItemDisplayName ==[c] \"${escapedName}\" || ` +
-    `kMDItemFSName ==[c] \"${escapedName}.app\" || ` +
-    `kMDItemFSName ==[c] \"*${escapedName}*.app\")`;
+    `kMDItemContentTypeTree == "com.apple.application-bundle" && (` +
+    `kMDItemDisplayName ==[c] "${escapedName}" || ` +
+    `kMDItemFSName ==[c] "${escapedName}.app" || ` +
+    `kMDItemFSName ==[c] "*${escapedName}*.app")`;
 
   const searchRoots = ['/Applications', '/System/Applications', `${homedir()}/Applications`];
   const bundlePaths = new Set<string>();
@@ -165,9 +184,13 @@ export const handleResolveAppIcon = async (appName: string): Promise<string | nu
   }
 
   const normalizedAppName = appName.trim();
-  const directCandidatePaths = toAppBundlePathCandidates(normalizedAppName).filter((candidatePath) => existsSync(candidatePath));
+  const directCandidatePaths = toAppBundlePathCandidates(normalizedAppName).filter((candidatePath) =>
+    existsSync(candidatePath),
+  );
   const spotlightResultPaths = searchAppBundlePaths(normalizedAppName);
-  const bundlePath = [...directCandidatePaths, ...spotlightResultPaths].find((candidatePath) => existsSync(candidatePath));
+  const bundlePath = [...directCandidatePaths, ...spotlightResultPaths].find((candidatePath) =>
+    existsSync(candidatePath),
+  );
 
   if (!bundlePath) {
     return null;

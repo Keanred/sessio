@@ -31,9 +31,9 @@ import '@fontsource/inter/500.css';
 import '@fontsource/inter/600.css';
 import '@fontsource/inter/700.css';
 import '@fontsource/inter/800.css';
+import { RouterProvider } from '@tanstack/react-router';
 import { createElement } from 'react';
 import { createRoot } from 'react-dom/client';
-import { RouterProvider } from '@tanstack/react-router';
 import { router } from './routes';
 
 const existingRoot = document.getElementById('root');

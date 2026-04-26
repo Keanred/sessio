@@ -1,4 +1,4 @@
-export type { AppUsage, Session } from '@shared/types';
+export type { AppUsage, Session, SessionSave } from '@shared/types';
 
 export enum ContextBridgeName {
   API = 'api',

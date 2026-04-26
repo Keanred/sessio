@@ -8,11 +8,13 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "noImplicitAny": true,
+    "strictNullChecks": true,
     "sourceMap": true,
     "baseUrl": ".",
     "paths": {
-      "@shared": ["."],
-      "@shared/*": ["*"]
+      "@shared": ["./"],
+      "@shared/*": ["./*"],
+      "@shared/types": ["./types.ts"]
     },
     "outDir": "dist",
     "moduleResolution": "node",

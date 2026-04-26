@@ -12,6 +12,14 @@ export type Session = {
   appUsage: AppUsage[];
 };
 
+export type SessionSave = {
+  startTime: number;
+  endTime: number;
+  duration: number;
+  note?: string;
+  appUsage: AppUsage[];
+};
+
 export type SessionHistoryItem = {
   id: string;
   startTime: Date;
