@@ -1,5 +1,4 @@
 import { Box, Menu, MenuItem } from '@mui/material';
-import { SessionSave } from '@shared/types';
 import { useEffect, useState } from 'react';
 import { GoalProgress } from '../common/GoalProgress';
 import { NoteCard } from '../common/NoteCard';
@@ -55,30 +54,16 @@ export const FocusSessionLayout = () => {
     };
   }, [timerState, startTime]);
 
-  const handleSaveSession = () => {
-    if (startTime) {
-      const endTime = new Date();
-      const duration = Math.floor((endTime.getTime() - startTime.getTime()) / 1000);
-      const sessionData: SessionSave = {
-        startTime: startTime.getTime(),
-        endTime: endTime.getTime(),
-        duration,
-        note: sessionNote,
-        appUsage: [], // Placeholder for app usage data
-      };
-      window.api.saveSession(sessionData);
-      setSessionNote('');
-    }
-  };
-
   const handleStartStop = () => {
     if (timerState === 'idle') {
       setStartTime(new Date());
       setTimerState('running');
+      window.api.startSession();
     } else {
       setTimerState('idle');
       setStartTime(null);
-      handleSaveSession();
+      window.api.endSession(sessionNote || undefined);
+      setSessionNote('');
     }
   };
 

@@ -9,4 +9,6 @@ contextBridge.exposeInMainWorld(ContextBridgeName.API, {
   saveSession: (session: SessionSave) => ipcRenderer.send('save-session', session),
   loadSessions: () => ipcRenderer.invoke('load-sessions'),
   resolveAppIcon: (appName: string) => ipcRenderer.invoke('resolve-app-icon', appName),
+  startSession: () => ipcRenderer.invoke('start-session'),
+  endSession: (note?: string) => ipcRenderer.invoke('end-session', note),
 });

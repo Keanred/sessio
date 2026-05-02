@@ -2,6 +2,7 @@ import { app, ipcMain, Menu, Rectangle, session } from 'electron';
 import started from 'electron-squirrel-startup';
 import { createDatabase, seedSessionsIfEmpty } from './db';
 import { handleLoadSessions, handleResolveAppIcon, handleSaveSession } from './session';
+import sessionService from './sessionService';
 import { createTray, destroyTray, tray } from './tray';
 import * as WindowModule from './window';
 import { createWindow, showWindowNearTray } from './window';
@@ -39,6 +40,8 @@ app.whenReady().then(() => {
   ipcMain.on('save-session', (_event, session) => handleSaveSession(session));
   ipcMain.handle('load-sessions', handleLoadSessions);
   ipcMain.handle('resolve-app-icon', (_event, appName: string) => handleResolveAppIcon(appName));
+  ipcMain.handle('start-session', () => sessionService.startSession());
+  ipcMain.handle('end-session', (_event, note?: string) => sessionService.endSession(note));
 
   session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
     callback({
