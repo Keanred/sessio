@@ -1,6 +1,7 @@
 export type AppUsage = {
   appName: string;
   duration: number;
+  appPath?: string;
 };
 
 export type Session = {

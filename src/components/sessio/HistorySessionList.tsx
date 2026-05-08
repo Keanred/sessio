@@ -17,12 +17,15 @@ type HistorySessionListProps = {
   items: SessionHistoryItem[];
 };
 
+const toIconKey = (appName: string, appPath?: string): string => `${appName}::${appPath ?? ''}`;
+
 const buildHistorySessionListItem = (
   session: SessionHistoryItem,
-  iconUrlsByAppName: Record<string, string>,
+  iconUrlsByAppKey: Record<string, string>,
 ): HistorySessionListItem => {
   const primaryApp = session.appUsage[0];
   const appName = primaryApp?.appName ?? 'Focus Session';
+  const appPath = primaryApp?.appPath;
 
   return {
     id: session.id,
@@ -30,7 +33,7 @@ const buildHistorySessionListItem = (
     duration: session.duration,
     timestamp: session.startTime.toLocaleString(),
     note: session.note ?? '',
-    iconUrl: iconUrlsByAppName[appName] ?? '',
+    iconUrl: iconUrlsByAppKey[toIconKey(appName, appPath)] ?? '',
     iconAlt: `${appName} icon`,
     iconBackgroundColor: 'rgba(242, 245, 252, 0.94)',
   };
@@ -106,23 +109,28 @@ const HistorySessionRow = ({ item }: { item: HistorySessionListItem }) => {
 };
 
 export const HistorySessionList = ({ items }: HistorySessionListProps) => {
-  const [iconUrlsByAppName, setIconUrlsByAppName] = useState<Record<string, string>>({});
+  const [iconUrlsByAppKey, setIconUrlsByAppKey] = useState<Record<string, string>>({});
 
-  const appNames = useMemo(() => {
-    const uniqueNames = new Set<string>();
+  const primaryApps = useMemo(() => {
+    const uniqueKeys = new Set<string>();
+    const uniqueApps: Array<{ appName: string; appPath?: string }> = [];
 
     for (const item of items) {
-      const primaryAppName = item.appUsage[0]?.appName;
-      if (primaryAppName) {
-        uniqueNames.add(primaryAppName);
+      const primaryApp = item.appUsage[0];
+      if (primaryApp?.appName) {
+        const key = toIconKey(primaryApp.appName, primaryApp.appPath);
+        if (!uniqueKeys.has(key)) {
+          uniqueKeys.add(key);
+          uniqueApps.push({ appName: primaryApp.appName, appPath: primaryApp.appPath });
+        }
       }
     }
 
-    return Array.from(uniqueNames);
+    return uniqueApps;
   }, [items]);
 
   useEffect(() => {
-    if (appNames.length === 0) {
+    if (primaryApps.length === 0) {
       return;
     }
 
@@ -130,9 +138,9 @@ export const HistorySessionList = ({ items }: HistorySessionListProps) => {
 
     const resolveIcons = async () => {
       const resolvedEntries = await Promise.all(
-        appNames.map(async (appName) => {
-          const iconUrl = await window.api.resolveAppIcon(appName).catch((): null => null);
-          return [appName, iconUrl] as const;
+        primaryApps.map(async ({ appName, appPath }) => {
+          const iconUrl = await window.api.resolveAppIcon(appName, appPath).catch((): null => null);
+          return [toIconKey(appName, appPath), iconUrl] as const;
         }),
       );
 
@@ -140,13 +148,13 @@ export const HistorySessionList = ({ items }: HistorySessionListProps) => {
         return;
       }
 
-      setIconUrlsByAppName((previousMap) => {
+      setIconUrlsByAppKey((previousMap) => {
         const nextMap = { ...previousMap };
         let hasChanges = false;
 
-        for (const [appName, iconUrl] of resolvedEntries) {
-          if (iconUrl && nextMap[appName] !== iconUrl) {
-            nextMap[appName] = iconUrl;
+        for (const [appKey, iconUrl] of resolvedEntries) {
+          if (iconUrl && nextMap[appKey] !== iconUrl) {
+            nextMap[appKey] = iconUrl;
             hasChanges = true;
           }
         }
@@ -160,7 +168,7 @@ export const HistorySessionList = ({ items }: HistorySessionListProps) => {
     return () => {
       disposed = true;
     };
-  }, [appNames]);
+  }, [primaryApps]);
 
   return (
     <Box
@@ -183,7 +191,7 @@ export const HistorySessionList = ({ items }: HistorySessionListProps) => {
       }}
     >
       {items.map((item) => (
-        <HistorySessionRow key={item.id} item={buildHistorySessionListItem(item, iconUrlsByAppName)} />
+        <HistorySessionRow key={item.id} item={buildHistorySessionListItem(item, iconUrlsByAppKey)} />
       ))}
     </Box>
   );

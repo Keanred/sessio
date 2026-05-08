@@ -1,4 +1,5 @@
 import { Box } from '@mui/material';
+import { useEffect, useState } from 'react';
 import { AppDistribution } from '../common/AppDistribution';
 import { PrimaryMetricCard, SecondaryMetricCard } from '../common/MetricCards';
 import { PanelFooter } from '../common/PanelFooter';
@@ -12,29 +13,14 @@ const topNavTabs = [
   { id: 'stats', label: 'Stats', to: '/stats' },
 ];
 
-const appDistributionItems = [
-  {
-    id: 'vscode',
-    appName: 'VS Code',
-    percent: 70,
-    iconName: 'terminal',
-    fillColor: 'linear-gradient(90deg, #0058bc, #0070eb)',
-  },
-  {
-    id: 'chrome',
-    appName: 'Chrome',
-    percent: 15,
-    iconName: 'public',
-    fillColor: 'linear-gradient(90deg, #7c93bf, #9fb0d1)',
-  },
-  {
-    id: 'slack',
-    appName: 'Slack',
-    percent: 15,
-    iconName: 'forum',
-    fillColor: 'linear-gradient(90deg, #7c93bf, #9fb0d1)',
-  },
-];
+type AppDistributionItem = {
+  id: string;
+  appName: string;
+  percent: number;
+  iconName: string;
+  iconUrl?: string;
+  fillColor: string;
+};
 
 const weeklyTrendBars = [
   { id: 'mon', heightPercent: 40 },
@@ -46,10 +32,59 @@ const weeklyTrendBars = [
   { id: 'sun', heightPercent: 0 },
 ];
 
+const formatDuration = (totalSeconds: number): string => {
+  const h = Math.floor(totalSeconds / 3600);
+  const m = Math.floor((totalSeconds % 3600) / 60);
+  return `${h}h ${m}m`;
+};
+
 export const FocusStatsLayout = () => {
+  const [appDistributionItems, setAppDistributionItems] = useState<AppDistributionItem[]>([]);
+  const [totalFocusTime, setTotalFocusTime] = useState<string>('0h 0m');
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadAppUsage = async () => {
+      const apps = await window.api.getAppUsage();
+      const totalDuration = apps.reduce((sum, appUsage) => sum + appUsage.duration, 0);
+
+      if (isMounted) {
+        setTotalFocusTime(formatDuration(totalDuration));
+      }
+
+      const sortedApps = [...apps].sort((appA, appB) => appB.duration - appA.duration);
+
+      const items = await Promise.all(
+        sortedApps.map(async ({ appName, duration, appPath }) => {
+          const iconUrl = await window.api.resolveAppIcon(appName, appPath).catch((): null => null);
+
+          return {
+            id: appName.toLowerCase().replace(/\s+/g, '-'),
+            appName,
+            percent: totalDuration > 0 ? Math.round((duration / totalDuration) * 100) : 0,
+            iconName: 'apps',
+            iconUrl: iconUrl ?? undefined,
+            fillColor: 'linear-gradient(90deg, #7c93bf, #9fb0d1)',
+          };
+        }),
+      );
+
+      if (isMounted) {
+        setAppDistributionItems(items);
+      }
+    };
+
+    void loadAppUsage();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   return (
     <PopoverFrame
-      ariaLabel="Petite Focus stats panel"
+      ariaLabel="Sessio Focus stats panel"
       paperSx={{
         backgroundColor: '#f9f9fb',
         border: '1px solid rgba(193, 198, 215, 0.1)',
@@ -58,7 +93,7 @@ export const FocusStatsLayout = () => {
         width: 360,
       }}
     >
-      <FocusTopNav title="Petite Focus" tabs={topNavTabs} showDivider={false} />
+      <FocusTopNav title="Sessio Focus" tabs={topNavTabs} showDivider={false} />
 
       <Box
         component="main"
@@ -74,7 +109,7 @@ export const FocusStatsLayout = () => {
         }}
       >
         <Box sx={{ display: 'grid', gap: 1.5, gridTemplateColumns: '1fr 1fr' }}>
-          <PrimaryMetricCard label="Today's Focus Time" value="6h 42m" delta="+12%" progressPercent={82} />
+          <PrimaryMetricCard label="Todays Focus Time" value={totalFocusTime} delta="+12%" progressPercent={82} />
 
           <SecondaryMetricCard
             label="Top App"

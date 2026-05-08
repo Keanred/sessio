@@ -1,10 +1,13 @@
-import { activeWindow } from 'get-windows';
-import { handleSaveSession } from './session';
 import { app } from 'electron';
+import { activeWindow } from 'get-windows';
+import type { AppUsage } from './types';
+import { handleSaveSession } from './session';
+
+type LiveAppUsageByName = Record<string, { duration: number; appPath?: string }>;
 
 class SessionService {
   private static instance: SessionService;
-  private appUsage: { [key: string]: number } = {};
+  private appUsage: LiveAppUsageByName = {};
   private sessionStartTime: number = 0;
   private sessionEndTime: number = 0;
   private sessionDuration: number = 0;
@@ -28,13 +31,13 @@ class SessionService {
     const poll = async () => {
       const currentWindow = await activeWindow();
       if (currentWindow && currentWindow.owner.name !== app.getName()) {
-        this.trackAppUsage(currentWindow.owner.name, 1);
+        this.trackAppUsage(currentWindow.owner.name, 5, currentWindow.owner.path);
       }
     };
 
     this.intervalId = setInterval(() => {
       poll();
-    }, 1000);
+    }, 5000);
   }
 
   public endSession(note?: string): void {
@@ -55,18 +58,25 @@ class SessionService {
       endTime: this.sessionEndTime,
       duration: this.sessionDuration,
       note,
-      appUsage: Object.entries(this.appUsage).map(([appName, duration]) => ({
+      appUsage: Object.entries(this.appUsage).map(([appName, usage]) => ({
         appName,
-        duration,
+        duration: usage.duration,
+        appPath: usage.appPath,
       })),
     });
   }
 
-  public trackAppUsage(appName: string, duration: number): void {
+  public trackAppUsage(appName: string, duration: number, appPath?: string): void {
     if (this.appUsage[appName]) {
-      this.appUsage[appName] += duration;
+      this.appUsage[appName].duration += duration;
+      if (!this.appUsage[appName].appPath && appPath) {
+        this.appUsage[appName].appPath = appPath;
+      }
     } else {
-      this.appUsage[appName] = duration;
+      this.appUsage[appName] = {
+        duration,
+        appPath,
+      };
     }
   }
 
@@ -74,8 +84,12 @@ class SessionService {
     return this.sessionDuration;
   }
 
-  public getAppUsage(): { [key: string]: number } {
-    return this.appUsage;
+  public getAppUsage(): AppUsage[] {
+    return Object.entries(this.appUsage).map(([appName, usage]) => ({
+      appName,
+      duration: usage.duration,
+      appPath: usage.appPath,
+    }));
   }
 }
 

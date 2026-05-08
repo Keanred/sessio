@@ -3,14 +3,26 @@ import { execFileSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { basename } from 'node:path';
-import { getAppUsageRowsBySessionId, getSessionRows, insertSession, SessionRow } from './db';
+import {
+  getAppUsageRowsBySessionId,
+  getAverageSessionDuration,
+  getSessionRows,
+  getTodaysSessionDuration,
+  getTodaysTopApp,
+  insertSession,
+  SessionRow,
+} from './db';
 import { db } from './main';
 import { AppUsage, Session, SessionSave } from './types';
 
 export const isAppUsage = (value: unknown): value is AppUsage => {
   if (typeof value !== 'object' || value === null) return false;
   const v = value as Record<string, unknown>;
-  return typeof v.appName === 'string' && typeof v.duration === 'number';
+  return (
+    typeof v.appName === 'string' &&
+    typeof v.duration === 'number' &&
+    (v.appPath === undefined || typeof v.appPath === 'string')
+  );
 };
 
 export const isSession = (value: unknown): value is Session => {
@@ -62,6 +74,7 @@ const formSession = (session: Session): Session => {
     appUsage: session.appUsage.map((usage) => ({
       appName: usage.appName,
       duration: usage.duration,
+      appPath: usage.appPath,
     })),
   };
 };
@@ -70,7 +83,13 @@ const formAppUsage = (usage: AppUsage): AppUsage => {
   return {
     appName: usage.appName,
     duration: usage.duration,
+    appPath: usage.appPath,
   };
+};
+
+const normalizeBundlePathFromExecutablePath = (appPath: string): string => {
+  const bundleMatch = appPath.match(/^(.*\.app)(?:\/|$)/i);
+  return bundleMatch?.[1] ?? appPath;
 };
 
 export const handleSaveSession = (session: unknown): void => {
@@ -178,9 +197,24 @@ const searchAppBundlePaths = (appName: string): string[] => {
   });
 };
 
-export const handleResolveAppIcon = async (appName: string): Promise<string | null> => {
+export const handleResolveAppIcon = async (appName: string, appPath?: string): Promise<string | null> => {
   if (typeof appName !== 'string' || appName.trim().length === 0) {
     return null;
+  }
+
+  if (typeof appPath === 'string' && appPath.trim().length > 0) {
+    const candidatePath = normalizeBundlePathFromExecutablePath(appPath.trim());
+
+    if (existsSync(candidatePath)) {
+      try {
+        const iconImage = await app.getFileIcon(candidatePath, { size: 'small' });
+        if (!iconImage.isEmpty()) {
+          return iconImage.toDataURL();
+        }
+      } catch {
+        // Fallback to name-based search below.
+      }
+    }
   }
 
   const normalizedAppName = appName.trim();
@@ -202,4 +236,22 @@ export const handleResolveAppIcon = async (appName: string): Promise<string | nu
   } catch {
     return null;
   }
+};
+
+export const handleTotalFocusTimeToday = (): number => {
+  const totalDuration = getTodaysSessionDuration(db);
+  return totalDuration;
+};
+
+export const handleAverageSessionDuration = (): number => {
+  const averageDuration = getAverageSessionDuration(db);
+  return averageDuration;
+};
+
+export const handleTodaysTopApp = (): { appName: string; totalDuration: number } | null => {
+  return getTodaysTopApp(db);
+};
+
+export const handleGetAverageSessionDuration = (): number => {
+  return getAverageSessionDuration(db);
 };

@@ -39,9 +39,12 @@ if (process.platform === 'darwin') {
 app.whenReady().then(() => {
   ipcMain.on('save-session', (_event, session) => handleSaveSession(session));
   ipcMain.handle('load-sessions', handleLoadSessions);
-  ipcMain.handle('resolve-app-icon', (_event, appName: string) => handleResolveAppIcon(appName));
+  ipcMain.handle('resolve-app-icon', (_event, appName: string, appPath?: string) =>
+    handleResolveAppIcon(appName, appPath),
+  );
   ipcMain.handle('start-session', () => sessionService.startSession());
   ipcMain.handle('end-session', (_event, note?: string) => sessionService.endSession(note));
+  ipcMain.handle('get-app-usage', () => sessionService.getAppUsage());
 
   session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
     callback({

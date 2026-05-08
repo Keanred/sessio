@@ -13,6 +13,7 @@ export type SessionRow = {
 export type AppUsageRow = {
   appName: string;
   duration: number;
+  appPath?: string;
 };
 
 export const createDatabase = (): Database => {
@@ -33,10 +34,20 @@ export const createDatabase = (): Database => {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       sessionId TEXT NOT NULL,
       appName TEXT NOT NULL,
+      appPath TEXT,
       duration INTEGER NOT NULL,
       FOREIGN KEY (sessionId) REFERENCES sessions(id) ON DELETE CASCADE
     );
   `);
+
+  const appUsageColumns = db
+    .prepare("SELECT name FROM pragma_table_info('app_usage')")
+    .all() as Array<{ name: string }>;
+  const hasAppPathColumn = appUsageColumns.some((column) => column.name === 'appPath');
+
+  if (!hasAppPathColumn) {
+    db.exec('ALTER TABLE app_usage ADD COLUMN appPath TEXT;');
+  }
 
   // Normalize legacy duration values that were saved in milliseconds.
   db.exec(`
@@ -66,8 +77,8 @@ export const insertSession = (db: database.Database, session: SessionSave) => {
   `);
 
   const insertAppUsageStmt = db.prepare(`
-    INSERT INTO app_usage (sessionId, appName, duration)
-    VALUES (@sessionId, @appName, @duration);
+    INSERT INTO app_usage (sessionId, appName, appPath, duration)
+    VALUES (@sessionId, @appName, @appPath, @duration);
   `);
 
   const insertSessionTransaction = db.transaction((session: SessionSave) => {
@@ -77,6 +88,7 @@ export const insertSession = (db: database.Database, session: SessionSave) => {
       insertAppUsageStmt.run({
         sessionId: insertedSession.id,
         appName: appUsage.appName,
+        appPath: appUsage.appPath,
         duration: appUsage.duration,
       });
     }
@@ -85,12 +97,53 @@ export const insertSession = (db: database.Database, session: SessionSave) => {
   insertSessionTransaction(session);
 };
 
+export const getTodaysSessionDuration = (db: database.Database): number => {
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+  const startOfDayTimestamp = startOfDay.getTime();
+
+  const result = db
+    .prepare('SELECT SUM(duration) as totalDuration FROM sessions WHERE startTime >= ?')
+    .get(startOfDayTimestamp) as { totalDuration: number | null };
+
+  return result.totalDuration || 0;
+};
+
+export const getAverageSessionDuration = (db: database.Database): number => {
+  const result = db.prepare('SELECT AVG(duration) as avgDuration FROM sessions').get() as {
+    avgDuration: number | null;
+  };
+  return result.avgDuration || 0;
+};
+
+export const getTodaysTopApp = (db: database.Database): { appName: string; totalDuration: number } | null => {
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+  const startOfDayTimestamp = startOfDay.getTime();
+
+  const result = db
+    .prepare(
+      `
+    SELECT appName, SUM(duration) as totalDuration
+    FROM app_usage
+    JOIN sessions ON app_usage.sessionId = sessions.id
+    WHERE sessions.startTime >= ?
+    GROUP BY appName
+    ORDER BY totalDuration DESC
+    LIMIT 1;
+  `,
+    )
+    .get(startOfDayTimestamp) as { appName: string; totalDuration: number } | undefined;
+
+  return result || null;
+};
+
 export const getSessionRows = (db: database.Database) => {
   return db.prepare('SELECT id, startTime, endTime, duration, note FROM sessions').all();
 };
 
 export const getAppUsageRowsBySessionId = (db: database.Database, sessionId: string) => {
-  return db.prepare('SELECT appName, duration FROM app_usage WHERE sessionId = ?').all(sessionId);
+  return db.prepare('SELECT appName, appPath, duration FROM app_usage WHERE sessionId = ?').all(sessionId);
 };
 
 const createSeedSessions = (): SessionSave[] => {

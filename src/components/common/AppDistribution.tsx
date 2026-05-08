@@ -1,4 +1,4 @@
-import { Box, LinearProgress, Typography } from '@mui/material';
+import { Avatar, Box, LinearProgress, Typography } from '@mui/material';
 import { Icon } from './Icon';
 
 type DistributionItem = {
@@ -6,6 +6,7 @@ type DistributionItem = {
   appName: string;
   percent: number;
   iconName: string;
+  iconUrl?: string;
   fillColor?: string;
 };
 
@@ -33,7 +34,11 @@ const DistributionRow = ({ item }: { item: DistributionItem }) => {
               width: 24,
             }}
           >
-            <Icon name={item.iconName} sx={{ fontSize: 16 }} />
+            {item.iconUrl ? (
+              <Avatar alt={`${item.appName} icon`} src={item.iconUrl} sx={{ height: 18, width: 18 }} variant="rounded" />
+            ) : (
+              <Icon name={item.iconName} sx={{ fontSize: 16 }} />
+            )}
           </Box>
           <Typography color="text.primary" sx={{ fontSize: 12, fontWeight: 500 }}>
             {item.appName}
